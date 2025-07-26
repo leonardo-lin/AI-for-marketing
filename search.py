@@ -1,0 +1,2 @@
+import duckduckgo_search
+print(duckduckgo_search.__version__)
