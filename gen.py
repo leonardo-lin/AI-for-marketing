@@ -1,10 +1,11 @@
 import openai
-import os
-from dotenv import load_dotenv
+
 import logging
 from datetime import datetime
 import search
 import json
+import os
+from dotenv import load_dotenv
 # 1. 載入 .env 檔
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -62,12 +63,7 @@ def mission_search_query(mission, model="gpt-4o-mini"):
             max_tokens=100
         )
         query = response["choices"][0]["message"]["content"].strip()
-        # print(query)
-        # query = json.loads(query)
-        # print(type(query))
-        # print(query[0])
-        # output = search.get_info(query[0])
-        # chat_with_gpt(prompt=output)
+
         return query
     except Exception as e:
         return f"❌ 發生錯誤: {e}"
@@ -127,7 +123,7 @@ if __name__ == "__main__":
 
     #mission = 找到適合的展覽與活動組合成list
     #分析不同展覽的優勢與契合度
-    user_input = input("選擇你要尋找的展覽：")
+    user_input = input("選擇你要尋找的展覽：") 
     #撈取所有該展覽的廠商
     user_input = input("選取你要的廠商")
 
