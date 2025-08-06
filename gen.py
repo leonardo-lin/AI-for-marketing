@@ -3,6 +3,7 @@ import openai
 import logging
 from datetime import datetime
 import search
+import data_Compilation
 import json
 import os
 from dotenv import load_dotenv
@@ -108,14 +109,15 @@ if __name__ == "__main__":
             break
         reply = chat_with_gpt(user_input)
         print("\n🤖 GPT-4o-mini 回覆：\n" + reply)
-    report = summarize_report("請針對這段對話做一份針對於商品的詳情與市場定位做一份詳細的總結報告")
-    conversation_history = [{"role": "system", "content": f"以下是一份我們剛剛討論關於產品的市場定位報告\n{report}\n\n現在你是一位潛在客戶開發專家，你要負責幫我分析哪邊可以幫我找到潛在客戶"}]
+    summary_report = summarize_report("請針對這段對話做一份針對於商品的詳情與市場定位做一份詳細的總結報告")
+    conversation_history = [{"role": "system", "content": f"以下是一份我們剛剛討論關於產品的市場定位報告\n{summary_report}\n\n現在你是一位潛在客戶開發專家，你要負責幫我分析哪邊可以幫我找到潛在客戶"}]
     
     
     
     
     print("產品分析結束，現在進入潛在客戶尋找階段")
     #先做第一個RAG找資料
+    report = data_Compilation.mission_based_search_and_report(mission = f'根據使用者對於產品的描述{summary_report}\n\n請列出這樣的產品可以在甚麼樣的場合、展覽、活動找到潛在客戶')
     activities_info = mission_search_query(mission='找到數個可能能找到大量客戶的展覽與活動')
     print(activities_info)
     user_input = input("你可以在這邊補充有哪些場合可以取得客戶資料：")

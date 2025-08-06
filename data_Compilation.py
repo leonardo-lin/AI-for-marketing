@@ -1,7 +1,8 @@
 import openai
 import requests
 from bs4 import BeautifulSoup
-from googlesearch import search
+import search
+# from googlesearch import search
 import os
 from dotenv import load_dotenv
 # 1. 載入 .env 檔
@@ -18,7 +19,7 @@ conversation_history = [
 # ✅ 步驟 1：根據任務產生搜尋查詢
 def mission_search_query(mission, model="gpt-4o-mini"):
     try:
-        prompt_messages = conversation_history + [
+        prompt_messages = [
             {
                 "role": "system",
                 "content": f"你的任務是{mission}，先根據上面與使用者的內容，請判斷輸入哪些query可以搜尋到能幫助完成任務的資訊，並產生數個具體的搜尋查詢語句[\"Query1\",\"Query2\"...]，不要解釋，只輸出 Query 本身，用中括弧包圍成list格式。"
@@ -35,12 +36,12 @@ def mission_search_query(mission, model="gpt-4o-mini"):
         return f"❌ 發生錯誤: {e}"
 
 # ✅ 步驟 2：Google 搜尋
-def get_info(query: str, num_results=2):
-    try:
-        items = search(query, num_results=num_results, advanced=True)
-        return [item.url for item in items]
-    except Exception as e:
-        return [f"❌ 搜尋錯誤: {e}"]
+# def get_info(query: str, num_results=2):
+#     try:
+#         items = search(query, num_results=num_results, advanced=True)
+#         return [item.url for item in items]
+#     except Exception as e:
+#         return [f"❌ 搜尋錯誤: {e}"]
 
 # ✅ 步驟 3：抓取網頁文字內容
 def fetch_page_text(url):
@@ -52,7 +53,7 @@ def fetch_page_text(url):
             tag.decompose()
         text = soup.get_text(separator="\n")
         lines = [line.strip() for line in text.splitlines() if line.strip()]
-        return "\n".join(lines[:200])  # 最多抓前 200 行，避免太長
+        return "\n".join(lines[:150])  # 最多抓前 200 行，避免太長
     except Exception as e:
         return f"[讀取失敗: {e}]"
 
@@ -96,7 +97,7 @@ def mission_based_search_and_report(mission: str):
     all_texts = []
     for q in queries:
         print(f"➡️ 搜尋：{q}")
-        urls = get_info(q)
+        urls = search.get_info(q)
         for url in urls:
             print(f"  🌐 擷取：{url}")
             page_text = fetch_page_text(url)
