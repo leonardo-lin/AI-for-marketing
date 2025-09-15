@@ -121,10 +121,10 @@ if __name__ == "__main__":
         reply = chat_with_gpt(user_input)
         print("\n🤖 GPT-4o-mini 回覆：\n" + reply)
     summary_report = summarize_report("請針對這段對話做一份針對於商品的詳情與市場定位做一份詳細的總結報告")
-    conversation_history = [{"role": "system", "content": f"以下是一份我們剛剛討論關於產品的市場定位報告\n{summary_report}\n\n現在你是一位潛在客戶開發專家，你要負責幫我分析哪邊可以幫我找到潛在客戶"}]
+    # conversation_history = [{"role": "system", "content": f"以下是一份我們剛剛討論關於產品的市場定位報告\n{summary_report}\n\n現在你是一位潛在客戶開發專家，你要負責幫我分析哪邊可以幫我找到潛在客戶"}]
+    conversation_history.append({"role": "system", "content": f"現在你是一位潛在客戶開發專家，你要負責幫我分析哪邊可以幫我找到潛在客戶"})
     
-    
-    
+
     
     
     print("產品分析結束，現在進入潛在客戶尋找階段")
@@ -133,25 +133,33 @@ if __name__ == "__main__":
     print(report)
     # activities_info = mission_search_query(mission='找到數個可能能找到大量客戶的展覽與活動')
     # print(activities_info)
-    conversation_history.append({"role": "user", "content": report})
+    conversation_history.append({"role": "assistant", "content": report})
 
     # user_input = input("你可以在這邊補充有哪些場合可以取得客戶資料：")
-    user_input = '現在請幫我分析我的產品針對這些廠商有分別有哪些優勢，越詳細越好'
+    user_input = '你已經幫我找到我能推廣在哪些場合，現在請幫我分析我的產品針對這些廠商有分別有哪些優勢，越詳細越好'
     print(user_input)
-    # conversation_history.append({"role": "user", "content": user_input})
-    print(chat_with_gpt(user_input))
+    conversation_history.append({"role": "user", "content": user_input})
+    response = data_Compilation.mission_based_search_and_report(user_input)
+    print(response)
+    conversation_history.append({"role": "assistant", "content": response})
     #mission = 找到適合的展覽與活動組合成list
+    
     #分析不同展覽的優勢與契合度
     user_input = input("選擇你要尋找的展覽：") 
     user_input = f"現在我想合作的活動是{user_input}，請幫我分析有哪些潛在廠商會在該活動中出現"
-    # conversation_history.append({"role": "user", "content": user_input})
-    print(chat_with_gpt(user_input))
+    conversation_history.append({"role": "user", "content": user_input})
+    response = data_Compilation.mission_based_search_and_report(user_input)
+    print(response)
+    conversation_history.append({"role": "assistant", "content": response})
+    
     #撈取所有該展覽的廠商
     user_input = input("選取你要的廠商")
     user_input = f"現在我想合作的廠商是{user_input}，請幫我分析我要怎麼對這家廠商進行銷售"
-    # conversation_history.append({"role": "user", "content": user_input})
-    print(chat_with_gpt(user_input))
-    #第三階段，廠商分析 
+    conversation_history.append({"role": "user", "content": user_input})
+    response = data_Compilation.mission_based_search_and_report(user_input)
+    print(response)
+    conversation_history.append({"role": "assistant", "content": response})
+    
       
 
 

@@ -2,6 +2,7 @@ import openai
 import requests
 from bs4 import BeautifulSoup
 import search
+import time
 # from googlesearch import search
 import os
 from dotenv import load_dotenv
@@ -50,6 +51,7 @@ def mission_search_query(mission, model="gpt-4o-mini"):
 # ✅ 步驟 3：抓取網頁文字內容
 def fetch_page_text(url):
     try:
+        print(url)
         res = requests.get(url, timeout=5)
         soup = BeautifulSoup(res.text, "html.parser")
         # 移除 script, style
@@ -102,14 +104,18 @@ def mission_based_search_and_report(mission: str):
     for q in queries:
         print(f"➡️ 搜尋：{q}")
         urls = search.get_info(q)
+        print(urls)
         for url in urls:
+            time.sleep(1)
             print(f"  🌐 擷取：{url}")
             page_text = fetch_page_text(url)
             if not page_text.startswith("[讀取失敗"):
                 all_texts.append(page_text)
             else:
                 print(f"  ⚠️ {page_text}")
+            
         print()
+        
 
     # 3. 將所有內容交給 LLM 彙整報告
     if not all_texts:
