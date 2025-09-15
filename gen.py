@@ -7,6 +7,7 @@ import data_Compilation
 import json
 import os
 from dotenv import load_dotenv
+import data_Compilation
 # 1. 載入 .env 檔
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -31,8 +32,7 @@ def chat_with_gpt(prompt: str, model: str = "gpt-4o-mini"):
         response = openai.ChatCompletion.create(
             model=model,
             messages=conversation_history,
-            temperature=0.7,
-            max_tokens=300
+            temperature=0.7
         )
 
         reply = response["choices"][0]["message"]["content"].strip()
@@ -91,21 +91,32 @@ def summarize_report(system_prompt, model = "gpt-4o-mini"):
 
 if __name__ == "__main__":
     print("第一階段: 產品分析")
+    product = ''
     # user_input = input("\n請輸入你的問題：")
-
-    user_input = input("請描述你的產品，越詳細越好，我來幫你分析你在市場上的定位：")
-    conversation_history.append({"role": "user", "content": user_input})
-    reply = chat_with_gpt(user_input)
-    print("\n🤖 GPT-4o-mini 回覆：\n" + reply)
+    with open("product.txt",'r',encoding='utf-8')as f:
+        product = f.read()
+    # user_input = input("請描述你的產品，越詳細越好，我來幫你分析你在市場上的定位：")
+    print('產品內容'+product)
+    # user_input = product
+    conversation_history.append({"role": "user", "content": f'以下為我的產品描述\n{product}'})
+    system_prompt = '請針對我的產品幫我從各項網路資源上找到我的優勢產品定位'
+    anay = data_Compilation.mission_based_search_and_report(system_prompt+'\n'+product)
+    print(anay)
+    conversation_history.append({"role": "assistant", "content": f'以下為我的產品描述\n{product}'})
+    # reply = chat_with_gpt(user_input)
+    # print("\n🤖 GPT-4o-mini 回覆：\n" + reply)
     #需要一個RAG找資料與資料分析
     # print(generate_search_query())
+    
+    
+    
     while True:
         #RAG 分析上一則對話
         user_input = input("你可以在這邊補充你的市場地位，或是輸入exit進入客戶尋找階段：")
         conversation_history.append({"role": "user", "content": user_input})
         # print(mission_search_query())
         if user_input.lower() in ["exit", "quit", "bye"]:
-            print("👋 再見！")
+            print("👋 進入下一階段！")
             break
         reply = chat_with_gpt(user_input)
         print("\n🤖 GPT-4o-mini 回覆：\n" + reply)
@@ -115,21 +126,31 @@ if __name__ == "__main__":
     
     
     
+    
     print("產品分析結束，現在進入潛在客戶尋找階段")
     #先做第一個RAG找資料
     report = data_Compilation.mission_based_search_and_report(mission = f'根據使用者對於產品的描述{summary_report}\n\n請列出這樣的產品可以在甚麼樣的場合、展覽、活動找到潛在客戶')
-    activities_info = mission_search_query(mission='找到數個可能能找到大量客戶的展覽與活動')
-    print(activities_info)
-    user_input = input("你可以在這邊補充有哪些場合可以取得客戶資料：")
-    conversation_history.append({"role": "user", "content": user_input})
+    print(report)
+    # activities_info = mission_search_query(mission='找到數個可能能找到大量客戶的展覽與活動')
+    # print(activities_info)
+    conversation_history.append({"role": "user", "content": report})
 
+    # user_input = input("你可以在這邊補充有哪些場合可以取得客戶資料：")
+    user_input = '現在請幫我分析我的產品針對這些廠商有分別有哪些優勢，越詳細越好'
+    print(user_input)
+    # conversation_history.append({"role": "user", "content": user_input})
+    print(chat_with_gpt(user_input))
     #mission = 找到適合的展覽與活動組合成list
     #分析不同展覽的優勢與契合度
     user_input = input("選擇你要尋找的展覽：") 
+    user_input = f"現在我想合作的活動是{user_input}，請幫我分析有哪些潛在廠商會在該活動中出現"
+    # conversation_history.append({"role": "user", "content": user_input})
+    print(chat_with_gpt(user_input))
     #撈取所有該展覽的廠商
     user_input = input("選取你要的廠商")
-
-
+    user_input = f"現在我想合作的廠商是{user_input}，請幫我分析我要怎麼對這家廠商進行銷售"
+    # conversation_history.append({"role": "user", "content": user_input})
+    print(chat_with_gpt(user_input))
     #第三階段，廠商分析 
       
 

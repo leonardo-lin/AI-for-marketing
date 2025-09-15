@@ -22,7 +22,11 @@ def mission_search_query(mission, model="gpt-4o-mini"):
         prompt_messages = [
             {
                 "role": "system",
-                "content": f"你的任務是{mission}，先根據上面與使用者的內容，請判斷輸入哪些query可以搜尋到能幫助完成任務的資訊，並產生數個具體的搜尋查詢語句[\"Query1\",\"Query2\"...]，不要解釋，只輸出 Query 本身，用中括弧包圍成list格式。"
+                "content": f"先根據使用者的內容，請判斷輸入哪些query可以搜尋到能幫助完成任務的資訊，並產生數個具體的搜尋查詢語句[\"Query1\",\"Query2\"...]，不要解釋，只輸出 Query 本身，用中括弧包圍成list格式。"
+            },
+            {
+                "role": "user",
+                "content":f"你的任務是{mission}，請輸出Query"
             }
         ]
         response = openai.ChatCompletion.create(
